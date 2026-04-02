@@ -1,9 +1,9 @@
 /**
  * Investment Flow — SIP / MF / FD recommendation
- * Steps: goal → monthly_amount → risk_appetite → result
+ * Steps: goal → monthly_amount → risk_taking_ability → no_of_years → result
  */
 
-const STEPS = ['goal', 'monthly_amount', 'risk_appetite', 'horizon'];
+const STEPS = ['goal', 'monthly_amount', 'risk_taking_ability', 'no_of_years'];
 
 const GOALS = {
   '1': 'Wealth Growth',
@@ -29,11 +29,11 @@ const RISK_LEVELS = {
   'aggressive': 'High',
 };
 
-// Expected CAGR based on risk level
+//  CAGR
 const RETURNS = {
-  Low: { min: 6.5, max: 8.0, instruments: ['PPF', 'Fixed Deposits', 'Debt Mutual Funds', 'Government Bonds'] },
-  Medium: { min: 10.0, max: 13.0, instruments: ['Balanced Mutual Funds', 'Index Funds (Nifty 50)', 'Hybrid Funds'] },
-  High: { min: 14.0, max: 18.0, instruments: ['Equity Mutual Funds', 'Small Cap Funds', 'Direct Stocks'] },
+  Low: { min: 5.0, max: 6.9, instruments: ['PPF', 'Fixed Deposits', 'Debt Mutual Funds', 'Government Bonds'] },
+  Medium: { min: 7.0, max: 9.9, instruments: ['Balanced Mutual Funds', 'Index Funds', 'Hybrid Funds'] },
+  High: { min: 10.0, max: 13.0, instruments: ['Equity Mutual Funds', 'Small Cap Funds'] },
 };
 
 async function processStep(userInput, stepIndex, flowData) {
@@ -46,7 +46,7 @@ async function processStep(userInput, stepIndex, flowData) {
       if (!goal) {
         return {
           messages: [
-            `Please select your investment goal:\n\n1️⃣ Wealth Growth\n2️⃣ Retirement Planning\n3️⃣ Child Education\n4️⃣ Tax Saving (80C)\n\nReply with a number (1-4).`,
+            `Please select your investment goal:\n\n1️⃣ Wealth Growth\n2️⃣ Retirement Planning\n3️⃣ Child Education\n4️⃣ Tax Saving\n\nReply with a number (1-4).`,
           ],
           done: false,
           retry: true,
@@ -56,7 +56,7 @@ async function processStep(userInput, stepIndex, flowData) {
 
       return {
         messages: [
-          `Goal: *${goal}* 🎯\n\nHow much can you invest *every month*?\nEnter in ₹ (minimum ₹500, e.g., 5000)`,
+          `Goal: *${goal}* 🎯\n\nHow much can you invest *every month*?\nEnter in ₹ (minimum ₹500)`,
         ],
         done: false,
         updatedData: { ...flowData, goal },
@@ -77,14 +77,14 @@ async function processStep(userInput, stepIndex, flowData) {
 
       return {
         messages: [
-          `Monthly SIP: *₹${formatINR(monthlyAmount)}* ✅\n\nWhat is your *risk appetite*?\n\n1️⃣ Low (safe, stable returns)\n2️⃣ Medium (balanced growth)\n3️⃣ High (aggressive growth)\n\nReply with a number (1-3).`,
+          `Monthly SIP: *₹${formatINR(monthlyAmount)}* ✅\n\nWhat is your *risk appetite*?\n\n1️⃣ Low\n2️⃣ Medium\n3️⃣ High\n\nReply with a number (1-3).`,
         ],
         done: false,
         updatedData: { ...flowData, monthlyAmount },
       };
     }
 
-    case 'risk_appetite': {
+    case 'risk_taking_ability': {
       const riskLevel = RISK_LEVELS[input];
       if (!riskLevel) {
         return {
@@ -97,18 +97,18 @@ async function processStep(userInput, stepIndex, flowData) {
 
       return {
         messages: [
-          `Risk Level: *${riskLevel}* ✅\n\nFor how many years do you want to invest?\nEnter number of years (e.g., 10)`,
+          `Risk Level: *${riskLevel}* ✅\n\nFor how many years do you want to invest?\nEnter number of years (e.g., 5, 10, 20)`,
         ],
         done: false,
         updatedData: { ...flowData, riskLevel },
       };
     }
 
-    case 'horizon': {
+    case 'no_of_years': {
       const years = parseInt(input.replace(/[^0-9]/g, ''));
       if (isNaN(years) || years < 1 || years > 50) {
         return {
-          messages: [`Please enter a valid number of years (e.g., 5, 10, 20)`],
+          messages: [`Please enter a valid number of years between 1 and 50 (e.g., 5, 10, 20)`],
           done: false,
           retry: true,
           updatedData: flowData,
@@ -129,7 +129,7 @@ async function processStep(userInput, stepIndex, flowData) {
 }
 
 function getOpeningMessage(userName) {
-  return `Hello ${userName || 'there'}! 📈 Let's build your *investment plan* in 4 steps.\n\nWhat is your *primary investment goal*?\n\n1️⃣ Wealth Growth\n2️⃣ Retirement Planning\n3️⃣ Child Education\n4️⃣ Tax Saving (80C)\n\nReply with a number (1-4).`;
+  return `Hello ${userName || 'there'}! Let's build your *investment plan* in 4 steps.\n\nWhat is your *primary investment goal*?\n\n1️⃣ Wealth Growth\n2️⃣ Retirement Planning\n3️⃣ Child Education\n4️⃣ Tax Saving (80C)\n\nReply with a number (1-4).`;
 }
 
 // ---- SIP Calculation ----
