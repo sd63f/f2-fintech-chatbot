@@ -18,7 +18,7 @@ async function processStep(userInput, stepIndex, flowData)
 
       if (!knowsYScore && !doesntKnow) {
         return {
-          messages: [`Do you know your current credit score?\n\n1️⃣ Yes, I know my score\n2️⃣ No, I don't know\n\nReply 1 or 2.`],
+          messages: [`Do you know your current credit score?\n\n1️⃣ Yes 😇 \n2️⃣ No 😞\n\nReply 1 or 2.`],
           done: false,
           retry: true,
           updatedData: flowData,
@@ -42,7 +42,7 @@ async function processStep(userInput, stepIndex, flowData)
       };
     }
 
-    case 'score_value': {
+    case 'scorecard': {
       // If they don't know their score, this step is actually 'missed_payments'
       if (flowData.knowsScore === false) {
         return processMissedPayments(input, flowData);
@@ -51,7 +51,7 @@ async function processStep(userInput, stepIndex, flowData)
       const score = parseInt(input.replace(/[^0-9]/g, ''));
       if (isNaN(score) || score < 300 || score > 900) {
         return {
-          messages: [`Please enter a valid credit score between 300 and 900 (e.g., 720)`],
+          messages: [`Please enter a valid credit score between 300 and 900`],
           done: false,
           retry: true,
           updatedData: flowData,
