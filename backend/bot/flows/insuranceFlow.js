@@ -98,7 +98,7 @@ async function processStep(userInput, stepIndex, flowData) {
       }
 
       return {
-        messages: [`Dependents: *${dependents}* ✅\n\nWhat is your *annual income*? (Enter in ₹, e.g., 600000 for 6 Lakhs)`],
+        messages: [`Dependents: *${dependents}*============================\n\nWhat is your *annual income*?`],
         done: false,
         updatedData: { ...flowData, dependents },
       };

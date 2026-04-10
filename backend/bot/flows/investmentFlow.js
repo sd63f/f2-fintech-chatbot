@@ -151,7 +151,7 @@ function calculateInvestment({ goal, monthlyAmount, riskLevel, years }) {
 
   // Tax saving specific
   let taxBenefit = null;
-  if (goal === 'Tax Saving (80C)') {
+  if (goal === 'Tax Saving') {
     const annualInvestment = Math.min(monthlyAmount * 12, 150000);
     taxBenefit = Math.round(annualInvestment * 0.3); // 30% tax bracket
   }
