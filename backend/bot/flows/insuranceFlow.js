@@ -37,7 +37,7 @@ async function processStep(userInput, stepIndex, flowData) {
 
       const nextQuestion = insuranceType === 'Vehicle Insurance'
         ? `What is the current value of your vehicle?`
-        : `What is your age of the vehicle?`;
+        : `What is your age?`;
 
       const nextDataKey = insuranceType === 'Vehicle Insurance' ? 'age' : 'age';
 
@@ -49,8 +49,26 @@ async function processStep(userInput, stepIndex, flowData) {
     }
 
     case 'age': {
-      const age = parseInt(input.replace(/[^0-9]/g, ''));
-      if (isNaN(age) || age < 1 || age > 100) {
+      const value = parseInt(input.replace(/[^0-9]/g, ''));
+      
+      if (flowData.insuranceType === 'Vehicle Insurance') {
+        if (isNaN(value) || value < 1000) {
+          return {
+            messages: [`Please enter a valid vehicle value (e.g., 500000)`],
+            done: false,
+            retry: true,
+            updatedData: flowData,
+          };
+        }
+        // 'age' field stores vehicle value for vehicle insurance
+        return {
+          messages: [`Vehicle value: *₹${formatINR(value)}*\n\nWhat type of vehicle?\n1️⃣ Car\n2️⃣ Bike/Scooter`],
+          done: false,
+          updatedData: { ...flowData, vehicleValue: value },
+        };
+      }
+
+      if (isNaN(value) || value < 1 || value > 100) {
         return {
           messages: [`Please enter a valid age (in years, e.g., 30)`],
           done: false,
@@ -59,19 +77,10 @@ async function processStep(userInput, stepIndex, flowData) {
         };
       }
 
-      if (flowData.insuranceType === 'Vehicle Insurance') {
-        // 'age' field stores vehicle value for vehicle insurance
-        return {
-          messages: [`Vehicle value: *₹${formatINR(age)}*\n\nWhat type of vehicle?\n1️⃣ Car\n2️⃣ Bike/Scooter`],
-          done: false,
-          updatedData: { ...flowData, vehicleValue: age },
-        };
-      }
-
       return {
-        messages: [`Age: *${age} years* ✅\n\nHow many *dependents* do you have? \nEnter a number`],
+        messages: [`Age: *${value} years* ✅\n\nHow many *dependents* do you have? \nEnter a number`],
         done: false,
-        updatedData: { ...flowData, age },
+        updatedData: { ...flowData, age: value },
       };
     }
 
@@ -98,7 +107,7 @@ async function processStep(userInput, stepIndex, flowData) {
       }
 
       return {
-        messages: [`Dependents: *${dependents}*============================\n\nWhat is your *annual income*?`],
+        messages: [`Dependents: *${dependents}* ✅\n\nWhat is your *annual income*?`],
         done: false,
         updatedData: { ...flowData, dependents },
       };
